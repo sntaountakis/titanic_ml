@@ -45,3 +45,13 @@ class Encoder(BaseEstimator, TransformerMixin):
         X[['C', 'Q', 'S', 'N']] = transformed.toarray()
     
         return X
+
+class Dropper(BaseEstimator, TransformerMixin):
+
+    def fit(self, X, y=None):
+        return self
+    
+    def transform(self, X):
+        X.drop(['Name', 'Sex', 'Ticket', 'Cabin', 'Embarked', 'N'], axis=1, errors='ignore')
+        
+        return X
