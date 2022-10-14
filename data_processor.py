@@ -1,3 +1,4 @@
+from lib2to3.pytree import Base
 from typing import List
 import numpy as np
 import pandas as pd
@@ -19,7 +20,7 @@ class Splitter():
             strat_test_set = dataset.loc[test_indices]
         return strat_train_set, strat_test_set
     
-class AgeImputer(BaseEstimator, TransformerMixin):
+class Imputer(BaseEstimator, TransformerMixin):
     
     def fit(self, X, y=None):
         return self
@@ -28,4 +29,19 @@ class AgeImputer(BaseEstimator, TransformerMixin):
         imputer = SimpleImputer(strategy="mean")
         X['Age'] = imputer.fit_transform(X['Age'])
         
+        return X
+
+class Encoder(BaseEstimator, TransformerMixin):
+
+    def fit(self, X, y=None):
+        return self
+    
+    def transform(self, X):
+        encoder = OneHotEncoder()
+        transformed = encoder.fit_transform(X[['Sex']])
+        X[['Male', 'Female']] = transformed.toarray()
+
+        transformed = encoder.fit_transform(X[['Embarked']])
+        X[['C', 'Q', 'S', 'N']] = transformed.toarray()
+    
         return X
