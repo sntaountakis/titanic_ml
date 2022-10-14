@@ -27,7 +27,7 @@ class Imputer(BaseEstimator, TransformerMixin):
     
     def transform(self, X):
         imputer = SimpleImputer(strategy="mean")
-        X['Age'] = imputer.fit_transform(X['Age'])
+        X['Age'] = imputer.fit_transform(X[['Age']])
         
         return X
 
@@ -52,6 +52,6 @@ class Dropper(BaseEstimator, TransformerMixin):
         return self
     
     def transform(self, X):
-        X.drop(['Name', 'Sex', 'Ticket', 'Cabin', 'Embarked', 'N'], axis=1, errors='ignore')
+        X = X.drop(['Name', 'Sex', 'Ticket', 'Cabin', 'Embarked', 'N'], axis=1, errors='ignore')
         
         return X
