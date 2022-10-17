@@ -1,21 +1,20 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from pyparsing import traceParseAction
-import seaborn as sb
-import numpy as np
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
-from pipeline import Splitter, Imputer, Encoder, Dropper
 from preprocessor import Preprocessor
+from nearest_neighbor import NearestNeighbor
 import argparse
 
 def train(args):
     titanic_data = pd.read_csv('data/train.csv')
     pp = Preprocessor(data=titanic_data, args=args)
 
-    X_data, Y_data = pp.preprocess()
-    print(X_data)
+    X_train, Y_train, X_test, Y_test = pp.preprocess()
+    nn = NearestNeighbor()
+    nn.train(X_train, Y_train)
+    Y_test_pred = nn.predict(X_test)
+
+    print('Accuracy: {}'.format(np.mean(Y_test == Y_test_pred)))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

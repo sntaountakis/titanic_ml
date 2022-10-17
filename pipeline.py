@@ -1,6 +1,3 @@
-from lib2to3.pytree import Base
-from typing import List
-import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sb
@@ -14,7 +11,7 @@ class Splitter():
     def __init__(self, n_splits, test_size) -> None:
         self.splitter = StratifiedShuffleSplit(n_splits=n_splits, test_size=test_size)
     
-    def split(self, dataset: pd.DataFrame, features: List[str]):
+    def split(self, dataset: pd.DataFrame, features):
         for train_indices, test_indices in self.splitter.split(dataset, dataset[features]):
             strat_train_set = dataset.loc[train_indices]
             strat_test_set = dataset.loc[test_indices]
@@ -37,7 +34,7 @@ class Encoder(BaseEstimator, TransformerMixin):
         return self
     
     def transform(self, X):
-        encoder = OneHotEncoder()
+        encoder = OneHotEncoder(handle_unknown='infrequent_if_exist')
         transformed = encoder.fit_transform(X[['Sex']])
         X[['Male', 'Female']] = transformed.toarray()
 

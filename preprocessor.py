@@ -13,25 +13,32 @@ class Preprocessor():
         self.important_features = args.important_features
 
     def preprocess(self):
+        
+        # Split train and test sets
+        train_set, test_set = self.pc.split(self.data, self.important_features)
+
         # Imputer: fills empty ages with age mean, Encoder: One-hot on gender and pclass
         # Dropper: Drops unecessary columns
         pipeline = Pipeline([('imputer', Imputer()),
                             ('encoder', Encoder()),
                             ('dropper', Dropper())])
 
-        # Passes trainset through preprocessing pipeline
-        self.data = pipeline.fit_transform(self.data)
-        
-        # Split train and test sets
-        train_set, test_set = self.pc.split(self.data, self.important_features)
 
-        # Split labels from data set
-        X = train_set.drop(['Survived'], axis=1)
-        Y = train_set['Survived']
+        # Passes trainset through preprocessing pipeline
+        test_set = pipeline.fit_transform(test_set)
+        train_set = pipeline.fit_transform(train_set)
+        
 
         # Scale inputs on every feature s = (x - mean) / std
         scaler = StandardScaler()
-        X_data = scaler.fit_transform(X)
-        Y_data = Y.to_numpy()
 
-        return X_data, Y_data
+        # Split labels from data set
+        X_train = train_set.drop(['Survived'], axis=1)
+        Y_train = train_set['Survived'].to_numpy()
+        X_train = scaler.fit_transform(X_train)
+
+        X_test = test_set.drop(['Survived'], axis=1)
+        Y_test =  test_set['Survived'].to_numpy()
+        X_test = scaler.fit_transform(X_test)
+        
+        return X_train, Y_train, X_test, Y_test
