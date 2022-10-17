@@ -12,7 +12,7 @@ from sklearn.preprocessing import OneHotEncoder
 class Splitter():
     
     def __init__(self, n_splits, test_size) -> None:
-        self.splitter = StratifiedShuffleSplit(n_splits=1, test_size=0.2)
+        self.splitter = StratifiedShuffleSplit(n_splits=n_splits, test_size=test_size)
     
     def split(self, dataset: pd.DataFrame, features: List[str]):
         for train_indices, test_indices in self.splitter.split(dataset, dataset[features]):
@@ -52,6 +52,7 @@ class Dropper(BaseEstimator, TransformerMixin):
         return self
     
     def transform(self, X):
-        X = X.drop(['Name', 'Sex', 'Ticket', 'Cabin', 'Embarked', 'N'], axis=1, errors='ignore')
+        X = X.drop(['Name', 'Sex', 'Ticket', 'Cabin', 'Embarked', 'N'], 
+                    axis=1, errors='ignore')
         
         return X

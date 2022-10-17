@@ -1,29 +1,27 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from pyparsing import traceParseAction
 import seaborn as sb
 import numpy as np
 from sklearn.pipeline import Pipeline
-from data_processor import Splitter, Imputer, Encoder, Dropper
+from sklearn.preprocessing import StandardScaler
+from pipeline import Splitter, Imputer, Encoder, Dropper
+from preprocessor import Preprocessor
+import argparse
 
-titanic_data = pd.read_csv('data/train.csv')
+def train(args):
+    titanic_data = pd.read_csv('data/train.csv')
+    pp = Preprocessor(data=titanic_data, args=args)
 
-pc = Splitter(n_splits=1, test_size=0.2)
-train_set, test_set = pc.split(titanic_data, ["Survived", "Pclass", "Sex"])
+    X_data, Y_data = pp.preprocess()
+    print(X_data)
 
-pipeline = Pipeline([('imputer', Imputer()),
-                    ('encoder', Encoder()),
-                    ('dropper', Dropper())])
-
-train_set = pipeline.fit_transform(train_set)
-
-print(train_set)
-
-# Split train, test data to [0.8, 0.2] ratio with similar distributions
-# of Survived rates, Pclasses and Sexs
-#split = StratifiedShuffleSplit(n_splits=1, test_size=0.2)
-#for train_indices, test_indices in split.split(titanic_data, titanic_data[["Survived", "Pclass", "Sex"]]):
-#    strat_train_set = titanic_data.loc[train_indices]
-#    strat_test_set = titanic_data.loc[test_indices]
-
-
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--splits", help="Number of train/test splits", type=int, default=1)
+    parser.add_argument("--test_size", help="Percentage of data to be split in test data", type=float, default=0.2)
+    parser.add_argument("--important_features", nargs='+', default=["Survived", "Pclass", "Sex"])
+    args = parser.parse_args()
+    print(args.splits)
+    train(args)
